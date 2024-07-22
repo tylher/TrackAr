@@ -6,6 +6,7 @@ import {
 } from "@vis.gl/react-google-maps";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { mapApiKey } from "../main";
 
 const Home = () => {
   const position = { lat: 61.2176, lng: -149.8997 };
@@ -21,9 +22,7 @@ const Home = () => {
   useEffect(() => {
     axios
       .get(
-        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${
-          position.lat
-        },${position.lng}&key=${"AIzaSyB0s3oEbAvXver4dBW0Pg3_1w-2IGp1MDg"}`
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.lat},${position.lng}&key=${mapApiKey}`
       )
       .then((res) => {
         const location = res.data.results[0].formatted_address;

@@ -4,9 +4,11 @@ import App from "./App.jsx";
 import "./index.css";
 import { APIProvider } from "@vis.gl/react-google-maps";
 
+export const mapApiKey = import.meta.env.VITE_MAP_API_KEY;
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <APIProvider apiKey={"AIzaSyB0s3oEbAvXver4dBW0Pg3_1w-2IGp1MDg"}>
+    <APIProvider apiKey={mapApiKey}>
       <App />
     </APIProvider>
   </React.StrictMode>
