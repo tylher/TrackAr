@@ -7,9 +7,21 @@ import {
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { mapApiKey } from "../main";
+import { sendGetRequest } from "../services/api/axios-util";
+import { useWebSocket } from "../context/websocket-context";
+import { ENDPOINTS } from "../services/api/endpoints";
 
 const Home = () => {
-  const position = { lat: 61.2176, lng: -149.8997 };
+  const [locations, setLocations] = useState([]);
+  const [currentPosition, setCurrentPosition] = useState({
+    time: "",
+    latitude: "1.2344",
+    longitude: "20.1930",
+    address: "",
+  });
+
+  const { stompClient, isConnected } = useWebSocket();
+
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [locationAddress, setLocationAddress] = useState(null);
 
@@ -19,39 +31,82 @@ const Home = () => {
     }
   };
 
-  useEffect(() => {
-    axios
-      .get(
-        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${position.lat},${position.lng}&key=${mapApiKey}`
-      )
-      .then((res) => {
-        const location = res.data.results[0].formatted_address;
-        setLocationAddress(location);
+  const locationsData = async () => {
+    const { data } = await sendGetRequest(ENDPOINTS.ALL_LOCATIONS);
+
+    setLocations(data);
+    if (data && data.length > 0) {
+      const initialPosition = data[0];
+      setCurrentPosition({
+        time: initialPosition.time,
+        latitude: initialPosition.latitude,
+        longitude: initialPosition.longitude,
+        address: initialPosition.address,
       });
-  }, [position]);
+    }
+  };
+  const fetchData = async () => {
+    const { data } = await axios.get(
+      `https://maps.googleapis.com/maps/api/geocode/json?latlng=${currentPosition.latitude},${currentPosition.longitude}&key=${mapApiKey}`
+    );
+    if (data.results && data.results[0]) {
+      const location = data.results[0].formatted_address;
+      setLocationAddress(location);
+      console.log(location);
+    }
+  };
+
+  useEffect(() => {
+    if (!stompClient) return;
+
+    const subscription = stompClient.subscribe("/topic/locations", (loc) => {
+      console.log(JSON.parse(loc.body));
+      if (loc) {
+        setCurrentPosition(JSON.parse(loc.body));
+      }
+    });
+
+    return () => {
+      if (isConnected) {
+        subscription.unsubscribe();
+      }
+    };
+  }, [stompClient, isConnected]);
+
+  useEffect(() => {
+    locationsData();
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [currentPosition]);
+
+  const center = {
+    lat: parseFloat(currentPosition.latitude),
+    lng: parseFloat(currentPosition.longitude),
+  };
   return (
-    <div className="h-full overflow-auto pb-20 ">
-      <section className="min-h-screen w-full p-10 flex flex-col gap-5">
+    <div className="h-full  pb-20 font-raleway text-[#181616]">
+      <section className="lg:min-h-screen w-full md:px-10 px-5 py-10 flex flex-col gap-5">
         <h2 className="text-2xl font-semibold">Current Location</h2>
-        <div className="rounded-xl shadow-xl w-full h-[100vh] overflow-hidden">
+        <div className="rounded-xl shadow-xl w-full lg:h-[100vh] md:h-[70vh] h-[58vh] overflow-hidden">
           <Map
-            center={position}
-            defaultZoom={12}
+            center={center}
+            defaultZoom={10}
             gestureHandling={"greedy"}
             disableDefaultUI={true}
             mapId={"gateundlf"}
             onClick={onClickMap}
           >
             <Marker
-              position={position}
+              position={center}
               onMouseOver={() => {
-                setSelectedMarker(position);
-                console.log(position);
+                setSelectedMarker(currentPosition);
               }}
             />
             {selectedMarker && (
               <InfoWindow
-                position={position}
+                position={center}
                 onCloseClick={() => setSelectedMarker(null)}
               >
                 <div className="w-2/3 text-wrap flex gap-3 flex-col">
@@ -60,38 +115,38 @@ const Home = () => {
                 </div>
               </InfoWindow>
             )}
-
-            {/* <AdvancedMarker
-              position={position}
-              className="w-[250px] bg-white hover:hidden flex-col items-center gap-1 py-3 px-3 rounded-xl shadow-xl hidden "
-            >
-              <h2 className="text-[20px] font-medium">I am so customized</h2>
-              <p>That is pretty awesome!</p>
-
-              <svg
-                className="absolute text-white h-10 w-full left-0 top-full"
-                x="0px"
-                y="0px"
-                viewBox="0 0 255 255"
-                xmlSpace="preserve"
-              >
-                <polygon
-                  className="fill-current shadow-lg"
-                  points="0,0 127.5,127.5 255,0"
-                />
-              </svg>
-            </AdvancedMarker> */}
           </Map>
         </div>
       </section>
-      <section>
-        <table className="w-full table table-auto">
-          <tr>
-            <th>Time</th>
-            <th>Longitude</th>
-            <th>Latitude</th>
-            <th>Address</th>
-          </tr>
+      <section className="px-5 md:px-10 overflow-x-auto">
+        <table className="w-full table table-auto border-collapse text-nowrap">
+          <thead className="text-left ">
+            <tr className="border-0 border-b-[2px] border-gray-400">
+              <th className="p-2">Time</th>
+              <th className="p-2">Longitude</th>
+              <th className="p-2">Latitude</th>
+              <th className="p-2">Address</th>
+            </tr>
+          </thead>
+          <tbody>
+            {locations.map((loc, index) => {
+              return (
+                <tr
+                  key={index}
+                  className={
+                    `${
+                      index != locations.length - 1 ? "border-b-[2px] " : ""
+                    }` + "border-0 border-gray-400"
+                  }
+                >
+                  <td className="p-2">{loc.time}</td>
+                  <td className="p-2">{loc.longitude}</td>
+                  <td className="p-2">{loc.latitude}</td>
+                  <td className="p-2">{loc.address}</td>
+                </tr>
+              );
+            })}
+          </tbody>
         </table>
       </section>
     </div>

@@ -6,6 +6,7 @@ module.exports = {
     extend: {
       fontFamily: {
         satisfy: ["Satisfy", "cursive"],
+        raleway: ["Raleway", "sans-serif"],
       },
     },
   },
