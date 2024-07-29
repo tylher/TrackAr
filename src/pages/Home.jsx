@@ -25,6 +25,9 @@ const Home = () => {
 
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [locationAddress, setLocationAddress] = useState(null);
+  const [isMobileView, setIsMobileView] = useState(
+    () => window.innerWidth <= 768
+  );
 
   const onClickMap = () => {
     if (selectedMarker) {
@@ -105,13 +108,22 @@ const Home = () => {
               onMouseOver={() => {
                 setSelectedMarker(currentPosition);
               }}
+              onClick={
+                isMobileView && !selectedMarker
+                  ? () => {
+                      setSelectedMarker(currentPosition);
+                    }
+                  : () => {
+                      setSelectedMarker(null);
+                    }
+              }
             />
             {selectedMarker && (
               <InfoWindow
                 position={center}
                 onCloseClick={() => setSelectedMarker(null)}
               >
-                <div className="w-2/3 text-wrap flex gap-3 flex-col">
+                <div className="md:w-4/5 text-wrap flex gap-3 flex-col">
                   <h2 className="text-lg font-semibold">Current Location</h2>
                   <span>{locationAddress}</span>
                 </div>
@@ -123,7 +135,7 @@ const Home = () => {
       <section className="px-5 md:px-10 overflow-x-auto">
         <table className="w-full table table-auto border-collapse text-nowrap">
           <thead className="text-left ">
-            <tr className="border-0 border-b-[2px] border-gray-400">
+            <tr className="border-0 border-b-[2px] border-gray-400 text-nowrap">
               <th className="p-2">Time</th>
               <th className="p-2">Longitude</th>
               <th className="p-2">Latitude</th>
@@ -137,16 +149,18 @@ const Home = () => {
                   key={index}
                   className={
                     `${
-                      index != locations.length - 1 ? "border-b-[2px] " : ""
+                      index != locations.length - 1
+                        ? "border-b-[2px] text-nowrap"
+                        : ""
                     }` + "border-0 border-gray-400"
                   }
                 >
-                  <td className="p-2">
+                  <td className="p-2 text-nowrap">
                     {convertTimeStampToLocalDate(loc.timeStamp)}
                   </td>
-                  <td className="p-2">{loc.longitude}</td>
-                  <td className="p-2">{loc.latitude}</td>
-                  <td className="p-2">{loc.address}</td>
+                  <td className="p-2 text-nowrap">{loc.longitude}</td>
+                  <td className="p-2 text-nowrap">{loc.latitude}</td>
+                  <td className="p-2 text-nowrap">{loc.address}</td>
                 </tr>
               );
             })}

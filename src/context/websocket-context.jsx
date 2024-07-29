@@ -8,23 +8,27 @@ const WebSocketContext = createContext();
 const WebSocketProvider = ({ children }) => {
   const [stompClient, setStompClient] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const sockJsOptions = {
     transports: ["websocket", "xhr-streaming", "xhr-polling"],
-    timeout: 50000, // Custom timeout setting, in milliseconds
+    timeout: 10000, // Custom timeout setting, in milliseconds
     heartbeat: 25000, // Custom heartbeat interval, in milliseconds
   };
   useEffect(() => {
+    setIsLoading(true);
     const socket = new SockJS(
       "https://damoladev.uc.r.appspot.com/ws",
       null,
       sockJsOptions
     );
+
     const client = Stomp.over(socket);
     client.connect(
       {},
       () => {
         setStompClient(client);
+        setIsLoading(false);
         setIsConnected(true);
       },
       (error) => {
@@ -39,7 +43,7 @@ const WebSocketProvider = ({ children }) => {
     };
   }, []);
   return (
-    <WebSocketContext.Provider value={{ stompClient, isConnected }}>
+    <WebSocketContext.Provider value={{ stompClient, isConnected, isLoading }}>
       {children}
     </WebSocketContext.Provider>
   );
