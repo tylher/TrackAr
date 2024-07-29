@@ -132,8 +132,14 @@ const Home = () => {
           </Map>
         </div>
       </section>
-      <section className="px-5 md:px-10 overflow-x-auto">
-        <table className="w-full table table-auto border-collapse text-nowrap">
+      <section
+        className="px-5 md:px-10 overflow-x-auto"
+        style={{ overflowX: "auto" }}
+      >
+        <table
+          className="w-full table table-auto border-collapse text-nowrap whitespace-nowrap"
+          style={{ textWrap: "nowrap", whiteSpace: "nowrap" }}
+        >
           <thead className="text-left ">
             <tr className="border-0 border-b-[2px] border-gray-400 text-nowrap">
               <th className="p-2">Time</th>
