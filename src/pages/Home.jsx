@@ -93,7 +93,10 @@ const Home = () => {
     <div className="h-full  pb-20 font-raleway text-[#181616]">
       <section className="lg:min-h-screen w-full md:px-10 px-5 py-10 flex flex-col gap-5">
         <h2 className="text-2xl font-semibold">Current Location</h2>
-        <div className="rounded-xl shadow-xl w-full lg:h-[100vh] md:h-[70vh] h-[58vh] overflow-hidden">
+        <div
+          className="rounded-xl shadow-xl w-full lg:h-[100vh] md:h-[70vh] h-[58vh] overflow-hidden"
+          style={{ overflow: "hidden" }}
+        >
           <Map
             center={center}
             defaultZoom={10}
