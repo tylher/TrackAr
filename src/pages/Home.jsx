@@ -94,10 +94,11 @@ const Home = () => {
           <Map
             center={center}
             defaultZoom={10}
-            gestureHandling={"greedy"}
+            gestureHandling={"cooperative"}
             disableDefaultUI={true}
             mapId={"gateundlf"}
             onClick={onClickMap}
+            zoomControl={true}
           >
             <Marker
               position={center}

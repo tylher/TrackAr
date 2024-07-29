@@ -5,11 +5,25 @@ import { BASE_URL } from "../services/api/endpoints";
 
 const WebSocketContext = createContext();
 
-export const WebSocketProvider = ({ children }) => {
+const WebSocketProvider = ({ children }) => {
   const [stompClient, setStompClient] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
+
+  const sockJsOptions = {
+    transports: ["websocket", "xhr-streaming", "xhr-polling"],
+    timeout: 50000, // Custom timeout setting, in milliseconds
+    heartbeat: 25000, // Custom heartbeat interval, in milliseconds
+  };
   useEffect(() => {
+<<<<<<< HEAD
     const socket = new SockJS(`${BASE_URL}/ws`);
+=======
+    const socket = new SockJS(
+      "https://damoladev.uc.r.appspot.com/ws",
+      null,
+      sockJsOptions
+    );
+>>>>>>> dev
     const client = Stomp.over(socket);
     client.connect(
       {},
@@ -35,4 +49,6 @@ export const WebSocketProvider = ({ children }) => {
   );
 };
 
-export const useWebSocket = () => useContext(WebSocketContext);
+const useWebSocket = () => useContext(WebSocketContext);
+
+export { WebSocketProvider, useWebSocket };
