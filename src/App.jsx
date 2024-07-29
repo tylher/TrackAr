@@ -17,18 +17,10 @@ const router = createBrowserRouter([
   },
   {
     path: "/login",
-    element: (
-      <AuthProvider>
-        <Auth />
-      </AuthProvider>
-    ),
+    element: <Auth />,
   },
   {
-    element: (
-      <AuthProvider>
-        <ProtectedRouteLayout />
-      </AuthProvider>
-    ),
+    element: <ProtectedRouteLayout />,
     children: [
       {
         element: (
@@ -51,7 +43,10 @@ function App() {
   return (
     <>
       {/* <WebSocketProvider> */}
-      <RouterProvider router={router} />
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
+
       {/* </WebSocketProvider> */}
     </>
   );

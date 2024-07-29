@@ -15,10 +15,13 @@ const Auth = () => {
       authHeader(username, password);
       const res = await sendGetRequest("/auth/login");
       setIsAuthenticated(true);
+      sessionStorage.setItem("isAuthenticated", "true");
       navigate("/view-map");
       console.log(res);
     } catch (error) {
       console.error(error);
+    } finally {
+      setPassword("");
     }
   };
 
@@ -48,6 +51,7 @@ const Auth = () => {
           type="password"
           className="outline-none  p-2 rounded-md w-full"
           onChange={handlePassworChange}
+          value={password}
         />
         <input
           type="submit"

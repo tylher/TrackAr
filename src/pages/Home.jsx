@@ -10,6 +10,7 @@ import { mapApiKey } from "../main";
 import { sendGetRequest } from "../services/api/axios-util";
 import { useWebSocket } from "../context/websocket-context";
 import { ENDPOINTS } from "../services/api/endpoints";
+import { convertTimeStampToLocalDate } from "../utils/timeUtils";
 
 const Home = () => {
   const [locations, setLocations] = useState([]);
@@ -139,7 +140,9 @@ const Home = () => {
                     }` + "border-0 border-gray-400"
                   }
                 >
-                  <td className="p-2">{loc.time}</td>
+                  <td className="p-2">
+                    {convertTimeStampToLocalDate(loc.timeStamp)}
+                  </td>
                   <td className="p-2">{loc.longitude}</td>
                   <td className="p-2">{loc.latitude}</td>
                   <td className="p-2">{loc.address}</td>
