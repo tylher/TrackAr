@@ -105,6 +105,7 @@ const Home = () => {
             mapId={"gateundlf"}
             onClick={onClickMap}
             zoomControl={true}
+            style={{ borderRadius: "12px", overflow: "hidden" }}
           >
             <Marker
               position={center}
