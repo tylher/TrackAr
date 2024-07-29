@@ -1,4 +1,4 @@
-export const BASE_URL = "http://localhost:8080";
+export const BASE_URL = "https://damoladev.uc.r.appspot.com/";
 
 export const ENDPOINTS = {
   ALL_LOCATIONS: "/location/all",
