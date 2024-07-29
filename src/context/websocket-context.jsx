@@ -15,15 +15,11 @@ const WebSocketProvider = ({ children }) => {
     heartbeat: 25000, // Custom heartbeat interval, in milliseconds
   };
   useEffect(() => {
-<<<<<<< HEAD
-    const socket = new SockJS(`${BASE_URL}/ws`);
-=======
     const socket = new SockJS(
       "https://damoladev.uc.r.appspot.com/ws",
       null,
       sockJsOptions
     );
->>>>>>> dev
     const client = Stomp.over(socket);
     client.connect(
       {},
