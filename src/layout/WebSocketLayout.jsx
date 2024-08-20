@@ -1,9 +1,10 @@
 import React from "react";
 import { useWebSocket } from "../context/websocket-context";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 
 const WebSocketLayout = () => {
   const { isConnected, isLoading } = useWebSocket();
+  const navigate = useNavigate();
   if (isLoading)
     return (
       <div>
@@ -18,6 +19,10 @@ const WebSocketLayout = () => {
       </div>
     );
   }
+
+  // if (!isConnected) {
+  //   navigate("/view-map");
+  // }
 };
 
 export default WebSocketLayout;

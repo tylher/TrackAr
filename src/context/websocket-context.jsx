@@ -16,27 +16,33 @@ const WebSocketProvider = ({ children }) => {
     heartbeat: 25000, // Custom heartbeat interval, in milliseconds
   };
   useEffect(() => {
-    setIsLoading(true);
-    const socket = new SockJS(`${BASE_URL}/ws`, null, sockJsOptions);
+    if (!isConnected && !isLoading) {
+      setIsLoading(true);
+      const socket = new SockJS(`${BASE_URL}/ws`, null, sockJsOptions);
 
-    const client = Stomp.over(socket);
-    client.connect(
-      {},
-      () => {
-        setStompClient(client);
-        setIsLoading(false);
-        setIsConnected(true);
-      },
-      (error) => {
-        setIsConnected(false);
-        console.error("websocket connection error: " + error);
-      }
-    );
-    return () => {
-      if (client && isConnected) {
-        client.disconnect();
-      }
-    };
+      const client = Stomp.over(socket);
+      const retryConnection = setTimeout(() => {
+        client.connect(
+          {},
+          () => {
+            setStompClient(client);
+            setIsLoading(false);
+            setIsConnected(true);
+          },
+          (error) => {
+            setIsConnected(false);
+            console.error("websocket connection error: " + error);
+          }
+        );
+      }, 5000); // Retry after 5 seconds
+
+      return () => clearTimeout(retryConnection);
+    }
+    // return () => {
+    //   if (client && isConnected) {
+    //     client.disconnect();
+    //   }
+    // };
   }, []);
   return (
     <WebSocketContext.Provider value={{ stompClient, isConnected, isLoading }}>
