@@ -65,8 +65,12 @@ const Home = () => {
 
     const subscription = stompClient.subscribe("/topic/locations", (loc) => {
       console.log(JSON.parse(loc.body));
+      const newLocation = JSON.parse(loc.body);
       if (loc) {
-        setCurrentPosition(JSON.parse(loc.body));
+        setCurrentPosition(newLocation);
+        setLocations((prev) => {
+          return [newLocation, ...prev];
+        });
       }
     });
 

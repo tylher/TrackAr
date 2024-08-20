@@ -17,11 +17,7 @@ const WebSocketProvider = ({ children }) => {
   };
   useEffect(() => {
     setIsLoading(true);
-    const socket = new SockJS(
-      "https://damoladev.uc.r.appspot.com/ws",
-      null,
-      sockJsOptions
-    );
+    const socket = new SockJS(`${BASE_URL}/ws`, null, sockJsOptions);
 
     const client = Stomp.over(socket);
     client.connect(
